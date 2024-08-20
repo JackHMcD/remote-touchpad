@@ -39,6 +39,7 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+	"C"
 )
 
 const (
@@ -57,6 +58,19 @@ type config struct {
 	MoveSpeed        float64 `json:"moveSpeed"`
 	MouseScrollSpeed float64 `json:"mouseScrollSpeed"`
 	MouseMoveSpeed   float64 `json:"mouseMoveSpeed"`
+}
+
+func SupportsColor(fd uintptr) bool {
+	return C.isatty(C.int(fd)) != 0
+}
+
+func SetTitle(title string) bool {
+	if C.isatty(C.int(os.Stdout.Fd())) != 0 {
+		os.Stdout.Write([]byte("\x1b]2;" + title + "\x07"))
+		os.Stdout.Sync()
+		return true
+	}
+	return false
 }
 
 func processCommand(controller inputcontrol.Controller, command string) error {
