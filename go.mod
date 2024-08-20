@@ -1,4 +1,4 @@
-module github.com/unrud/remote-touchpad
+module github.com/jackhmcd/remote-touchpad
 
 go 1.20
 
