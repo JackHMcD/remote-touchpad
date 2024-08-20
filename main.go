@@ -19,6 +19,7 @@
 
 package main
 
+import "C"
 import (
 	"crypto/hmac"
 	"crypto/rand"
@@ -39,7 +40,6 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
-	"C"
 )
 
 const (
