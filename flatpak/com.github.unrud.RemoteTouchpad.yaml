@@ -1,6 +1,6 @@
 app-id: com.github.unrud.RemoteTouchpad
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: remote-touchpad
 sdk-extensions:
@@ -8,19 +8,17 @@ sdk-extensions:
 finish-args:
   - --socket=fallback-x11
   - --socket=wayland
+  - --share=ipc # Required by Flathub linter
   - --share=network
 modules:
   - name: remote-touchpad
     sources:
       - type: git
         path: ..
-      - type: shell
-        commands:
-          - . /usr/lib/sdk/golang/enable.sh; go mod vendor -e
       - type: git
         url: https://github.com/godbus/dbus
-        tag: v5.1.0
-        commit: e523abc905595cf17fb0001a7d77eaaddfaa216d
+        tag: v5.2.1
+        commit: 20d95a3d9a57a5cb72cbdafb3fd9ecb6d2ccd038
         dest: vendor/github.com/godbus/dbus/v5
       - type: git
         url: https://github.com/skip2/go-qrcode
@@ -28,9 +26,17 @@ modules:
         dest: vendor/github.com/skip2/go-qrcode
       - type: git
         url: https://github.com/golang/net
-        tag: v0.24.0
-        commit: 7bbe32058aba7159e4d273710e6f4f1c16c627fb
+        tag: v0.48.0
+        commit: 35e1306bddd863f360fb94480c5fed84229953f0
         dest: vendor/golang.org/x/net
+      - type: git
+        url: https://github.com/golang/sys
+        tag: v0.39.0
+        commit: 08e54827f6706016347e1e4f4866b84126842b20
+        dest: vendor/golang.org/x/sys
+      - type: file
+        path: modules.txt
+        dest: vendor
     buildsystem: simple
     build-commands:
       - . /usr/lib/sdk/golang/enable.sh; go build -tags portal,x11

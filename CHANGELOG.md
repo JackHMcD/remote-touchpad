@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.5.3 (2025-12-24)
+
+* Update dependencies
+
+## 1.5.2 (2025-10-12)
+
+* Update dependencies
+
+## 1.5.0 (2025-03-18)
+
+* Add restore token support for the remote desktop portal
+* Update dependencies
+
+## 1.4.8 (2024-09-01)
+
+* Update dependencies
+
+## 1.4.7 (2024-08-30)
+
+* Update dependencies
+
 ## 1.4.6 (2024-02-06)
 
 * Prevent incorrect MIME types
