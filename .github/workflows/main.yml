@@ -1,0 +1,70 @@
+name: Build remote-touchpad DEB
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the build from the Actions tab
+  schedule:
+    - cron: '0 0 1 * *' # Optionally runs once a month to catch upstream updates
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goarch: amd64
+            deb_arch: amd64
+          - goarch: arm64
+            deb_arch: arm64
+
+    steps:
+      - name: Checkout Upstream Repository
+        uses: actions/checkout@v4
+        with:
+          repository: Unrud/remote-touchpad
+          ref: master # Checks out the latest code from the original author
+          
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.21'
+          
+      - name: Compile Binary
+        env:
+          GOOS: linux
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0 # Ensures a statically linked, pure-Go binary for easy cross-compiling
+        run: |
+          go build -tags "portal uinput x11" -o remote-touchpad
+          
+      - name: Build Debian Package
+        run: |
+          # Set up the staging directory structure
+          mkdir -p build-deb/DEBIAN
+          mkdir -p build-deb/usr/bin
+          
+          # Move the compiled binary into the staging area
+          cp remote-touchpad build-deb/usr/bin/
+          chmod 755 build-deb/usr/bin/remote-touchpad
+          
+          # Dynamically generate the DEBIAN/control file
+          cat <<EOF > build-deb/DEBIAN/control
+          Package: remote-touchpad
+          Version: 1.5.3
+          Architecture: ${{ matrix.deb_arch }}
+          Maintainer: GitHub Actions Build <actions@github.com>
+          Description: Control mouse and keyboard from a smartphone
+           Remote Touchpad allows you to control your PC's mouse and keyboard 
+           from the web browser of a smartphone or any touchscreen device.
+          EOF
+          
+          chmod 644 build-deb/DEBIAN/control
+          
+          # Package the staging area into a .deb file
+          dpkg-deb --build build-deb remote-touchpad_1.5.3_${{ matrix.deb_arch }}.deb
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remote-touchpad-${{ matrix.deb_arch }}-deb
+          path: '*.deb'
+          retention-days: 14
