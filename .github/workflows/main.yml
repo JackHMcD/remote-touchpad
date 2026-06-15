@@ -19,7 +19,8 @@ jobs:
       - name: Install CGO Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libx11-dev libxtst-dev libxi-dev
+          # Added libxt-dev to fix the X11/Intrinsic.h missing error
+          sudo apt-get install -y build-essential libx11-dev libxtst-dev libxi-dev libxt-dev
           
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -30,7 +31,7 @@ jobs:
         env:
           GOOS: linux
           GOARCH: amd64
-          CGO_ENABLED: 1 # Re-enabled to allow C bindings for uinput/x11/terminal
+          CGO_ENABLED: 1 
         run: |
           go build -tags "portal uinput x11" -o remote-touchpad
           
